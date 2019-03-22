@@ -12,7 +12,7 @@
 #include <kinova_driver/kinova_ros_types.h>
 
 
-namespace 
+namespace
 {
     /// \brief Convert Kinova-specific angle degree variations (0..180, 360-181) to
     ///        a more regular representation (0..180, -180..0).
@@ -100,6 +100,8 @@ KinovaArm::KinovaArm(KinovaComm &arm, const ros::NodeHandle &nodeHandle, const s
     robot_mode_ = kinova_robotType_[4];
     finger_number_ = kinova_robotType_[5]-'0';
     joint_total_number_ = arm_joint_number_ + finger_number_;
+
+    is_trajectory_control_ = false;
 
     if (robot_category_=='j') // jaco robot
     {
@@ -192,6 +194,7 @@ KinovaArm::KinovaArm(KinovaComm &arm, const ros::NodeHandle &nodeHandle, const s
             ("in/set_torque_control_parameters",
              &KinovaArm::setTorqueControlParametersService,this);
 
+    set_control_mode_service_ = node_handle_.advertiseService("in/set_control_mode", &KinovaArm::setControlModeService, this);
     /* Set up Publishers */
     joint_angles_publisher_ = node_handle_.advertise<kinova_msgs::JointAngles>
             ("out/joint_angles", 2);
@@ -219,6 +222,8 @@ KinovaArm::KinovaArm(KinovaComm &arm, const ros::NodeHandle &nodeHandle, const s
                                &KinovaArm::jointTorqueSubscriberCallback, this);
     cartesian_force_subscriber_ = node_handle_.subscribe("in/cartesian_force", 1,
                                   &KinovaArm::forceSubscriberCallback, this);
+    cartesian_velocity_finger_subscriber_ = node_handle_.subscribe("in/cartesian_velocity_finger", 1,
+                                            &KinovaArm::cartesianVelocityAndFingerCallback, this);
 
     node_handle_.param<double>("status_interval_seconds", status_interval_seconds_, 0.1);
 
@@ -259,7 +264,7 @@ bool KinovaArm::setTorqueControlModeService(kinova_msgs::SetTorqueControlMode::R
 }
 
 bool KinovaArm::setTorqueControlParametersService(kinova_msgs::SetTorqueControlParameters::Request &req, kinova_msgs::SetTorqueControlParameters::Response &res)
-{    
+{
     float safetyFactor;
     node_handle_.param<float>("torque_parameters/safety_factor", safetyFactor,1.0);
     kinova_comm_.setToquesControlSafetyFactor(safetyFactor);
@@ -283,7 +288,7 @@ bool KinovaArm::setTorqueControlParametersService(kinova_msgs::SetTorqueControlP
         for (int i = 0; i<min_torque.size(); i++)
         {
             min_torque_actuator[i] = min_torque.at(i);
-            max_torque_actuator[i] = max_torque.at(i);            
+            max_torque_actuator[i] = max_torque.at(i);
         }
         kinova_comm_.setJointTorqueMinMax(min_torque_info,max_torque_info);
     }
@@ -300,6 +305,24 @@ bool KinovaArm::setTorqueControlParametersService(kinova_msgs::SetTorqueControlP
             kinova_comm_.setRobotCOMParam(MANUAL_INPUT,com_parameters);
 
     }
+}
+
+bool KinovaArm::setControlModeService(kinova_msgs::SwitchControllerMsg::Request &req, kinova_msgs::SwitchControllerMsg::Response &res)
+{
+    std::string current_control_mode = req.current_control_mode;
+    if(current_control_mode == "trajectory")
+    {
+        is_trajectory_control_ = true;
+        ROS_INFO("TRAJECTORY CONTROL");
+    }
+    if(current_control_mode == "velocity")
+    {
+        is_trajectory_control_ = false;
+        ROS_INFO("VELOCITY CONTROL");
+    }
+
+    // std::cout << "TRAJECTORY CONTROL STATUS " << is_trajectory_control_;
+    return true;
 }
 
 void KinovaArm::jointVelocityCallback(const kinova_msgs::JointVelocityConstPtr& joint_vel)
@@ -537,7 +560,7 @@ void KinovaArm::publishJointAngles(void)
     if (arm_joint_number_ == 7)
     {
          joint_state.position[6] = kinova_angles.joint7 * M_PI/180;
-    }    
+    }
 
     if(finger_number_==2)
     {
@@ -702,7 +725,30 @@ void KinovaArm::statusTimer(const ros::TimerEvent&)
     publishJointAngles();
     publishToolPosition();
     publishToolWrench();
-    publishFingerPosition();   
+    publishFingerPosition();
+}
+
+// (argallab)
+// Teleop control of arm
+void KinovaArm::cartesianVelocityAndFingerCallback(const jaco_teleop::CartVelCmdConstPtr& teleop_vel)
+{
+    if (!kinova_comm_.isStopped())
+    {
+        cartesian_velocities_.X = teleop_vel->velocity.data[0];
+        cartesian_velocities_.Y = teleop_vel->velocity.data[1];
+        cartesian_velocities_.Z = teleop_vel->velocity.data[2];
+        cartesian_velocities_.ThetaX = teleop_vel->velocity.data[3];
+        cartesian_velocities_.ThetaY = teleop_vel->velocity.data[4];
+        cartesian_velocities_.ThetaZ = teleop_vel->velocity.data[5];
+
+        finger_positions_.Finger1 = teleop_vel->velocity.data[6];
+        finger_positions_.Finger2 = teleop_vel->velocity.data[7];
+        finger_positions_.Finger3 = teleop_vel->velocity.data[8];
+
+        if (!is_trajectory_control_)
+          kinova_comm_.setCartesianVelocitiesAndFingers(cartesian_velocities_, finger_positions_);
+
+     }
 }
 
 }  // namespace kinova

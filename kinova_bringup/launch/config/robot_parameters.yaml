@@ -1,4 +1,4 @@
-# Set this parameter to use a specific arm on your system    --> 
+# Set this parameter to use a specific arm on your system    -->
 # serial_number: PJ00000001030703130
 
 # Joint speed limit for joints 1, 2, 3
@@ -10,7 +10,7 @@ jointSpeedLimitParameter2: 20
 # payload: [COM COMx COMy COMz]
 #payload: [0, 0, 0, 0]
 
-connection_type: USB #Ethernet 
+connection_type: USB #Ethernet
 
 # Ethernet connection parameters
 ethernet: {
@@ -24,7 +24,7 @@ ethernet: {
 #Do not change these parameters unless you want to change torque control behavior
 torque_parameters: {
       publish_torque_with_gravity_compensation: false,
-      use_estimated_COM_parameters: false,
+      use_estimated_COM_parameters: true,
     # if torque min/max sepecified, all min/max values need to be specified
     #  torque_min: [80, 80, 80, 80, 80, 80, 80],
     #  torque_max: [90, 90, 90, 90, 90, 90, 90],
@@ -32,5 +32,5 @@ torque_parameters: {
     # safety_factor: 1,
     # COM parameters
     # order [m1,m2,...,m7,x1,x2,...,x7,y1,y2,...y7,z1,z2,...z7]
-    # com_parameters: [0,0,0,0,0,0,0, 0,0,0,0,0,0,0, 0,0,0,0,0,0,0, 0,0,0,0,0,0,0]
+    com_parameters: [0.000517489,-1.53949,0.00414294,-0.0186366,-0.0172144,-0.606276,-0.00680564,-0.00407307,-0.00261946,-0.16981,0.00564529,-0.00224557,0.399988,0.281676,-0.189164,-0.0406601,-0.0742801,-0.0353354,0.0282632]
 }

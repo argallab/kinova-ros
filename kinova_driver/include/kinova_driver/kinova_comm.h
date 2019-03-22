@@ -88,7 +88,9 @@ class KinovaComm
     void initFingers(void);
     void setEndEffectorOffset(unsigned int status, float x, float y, float z);
     void getEndEffectorOffset(unsigned int &status, float &x, float &y, float &z);
-
+    void setFrameType(int &frameType); // added to set frame type (argallab)
+    void getJoystickValue(JoystickCommand &joystickCommand); // added to read joystick values (argallab)
+    void sendJoystickCommand(JoystickCommand &joystickCommand); // added to send joystick values (argallab)
     // %EndTag(general functions)
 
 
@@ -100,10 +102,10 @@ class KinovaComm
     void setJointAngles(const KinovaAngles &angles, double speedJoint123 = 20,
                         double speedJoint4567 = 20, int timeout = 0, bool push = true);
     void getJointVelocities(KinovaAngles &vels);
-    void setJointVelocities(const AngularInfo& joint_vel);    
+    void setJointVelocities(const AngularInfo& joint_vel);
     void getJointAccelerations(AngularAcceleration &joint_acc);
     void getJointTorques(KinovaAngles &tqs);
-    void getJointCurrent(AngularPosition &anguler_current);    
+    void getJointCurrent(AngularPosition &anguler_current);
     void printAngles(const KinovaAngles &angles);
 
     // %EndTag(Angular Control)%
@@ -129,7 +131,7 @@ class KinovaComm
 
     // %Tag(Cartesian Control)%
 
-    void setCartesianControl();    
+    void setCartesianControl();
     void getCartesianCommand(CartesianPosition &cartesian_command);
     void getCartesianPosition(KinovaPose &position);
 
@@ -138,6 +140,7 @@ class KinovaComm
     //! \arg push - If true clears previous trajectories
     void setCartesianPosition(const KinovaPose &position, int timeout = 0, bool push = true);
     void setCartesianVelocities(const CartesianInfo &velocities);
+    void setCartesianVelocitiesAndFingers(const CartesianInfo &velocities, const FingerAngles &fingers);  // Velocity control of joints AND fingers
     float getMaxTranslationVelocity(void);
     void setMaxTranslationVelocity(const float &max_trans_vel);
     float getMaxOrientationVelocity(void);
@@ -154,7 +157,7 @@ class KinovaComm
     int numFingers() const;
     void getFingerPositions(FingerAngles &fingers);
     void setFingerPositions(const FingerAngles &fingers, int timeout = 0, bool push = true);
-    void printFingers(const FingersPosition &fingers);   
+    void printFingers(const FingersPosition &fingers);
 
     //Cartesian Admittance Control
     void startForceControl();

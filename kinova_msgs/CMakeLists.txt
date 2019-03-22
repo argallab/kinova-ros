@@ -37,6 +37,7 @@ add_service_files(
   ZeroTorques.srv
   AddPoseToCartesianTrajectory.srv
   RunCOMParametersEstimation.srv
+  SwitchControllerMsg.srv
 )
 
 add_action_files(DIRECTORY action
@@ -56,4 +57,3 @@ generate_messages(
 catkin_package(
   CATKIN_DEPENDS actionlib_msgs geometry_msgs message_runtime
 )
-

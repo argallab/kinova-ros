@@ -865,10 +865,10 @@ void KinovaComm::setRobotCOMParam(GRAVITY_TYPE type,std::vector<float> params)
         result = kinova_api_.setGravityManualInputParam(com_parameters);
     else
         result = kinova_api_.setGravityOptimalZParam(com_parameters);
-    if (result != NO_ERROR_KINOVA && result!=2005)
-    {
-        throw KinovaCommException("Could not set the COM parameters", result);
-    }
+    // if (result != NO_ERROR_KINOVA && result!=2005)
+    // {
+    //     throw KinovaCommException("Could not set the COM parameters", result);
+    // }
 }
 
 /**
@@ -890,6 +890,7 @@ These parameters can then be sent as input to the function SetOptimalZParam().
 */
 int KinovaComm::runCOMParameterEstimation(ROBOT_TYPE type)
 {
+    setAngularControl();
     float COMparams[GRAVITY_PARAM_SIZE];
     memset(&COMparams[0],0,sizeof(COMparams));
     int result;
@@ -911,10 +912,11 @@ int KinovaComm::runCOMParameterEstimation(ROBOT_TYPE type)
         throw KinovaCommException("Could not launch COM parameter estimation sequence", result);
     }
     result = kinova_api_.setGravityOptimalZParam(COMparams);
-    if (result != NO_ERROR_KINOVA && result!=2005)
-    {
-        throw KinovaCommException("Could not set COM Parameters", result);
-    }
+    // if (result != NO_ERROR_KINOVA && result!=2005)
+    // {
+    //     throw KinovaCommException("Could not set COM Parameters", result);
+    // }
+    result = kinova_api_.setGravityType(OPTIMAL); 
 }
 
 
@@ -1113,6 +1115,41 @@ void KinovaComm::setCartesianVelocities(const CartesianInfo &velocities)
     }
 }
 
+
+/**
+ * @brief Linear and angular velocity control in Cartesian space plus finger velocity control
+ * This function sends trajectory point(CARTESIAN_VELOCITY) that will be added in the robotical arm's FIFO. Waits until the arm has stopped moving before releasing control of the API. sendAdvanceTrajectory() is called in api to complete the motion.
+ * Definition of angular velocity "Omega" is based on the skew-symmetric matrices "S = R*R^(-1)", where "R" is the rotation matrix. angular velocity vector "Omega = [S(3,2); S(1,3); S(2,1)]".
+ * @param velocities unit are meter/second for linear velocity and fingers are in turns/second?.
+ */
+
+void KinovaComm::setCartesianVelocitiesAndFingers(const CartesianInfo &velocities, const FingerAngles &fingers)
+{
+    boost::recursive_mutex::scoped_lock lock(api_mutex_);
+    if (isStopped())
+    {
+        ROS_INFO("The cartesian velocities could not be set because the arm is stopped");
+        kinova_api_.eraseAllTrajectories();
+        return;
+    }
+
+    TrajectoryPoint kinova_velocity;
+    kinova_velocity.InitStruct();
+
+    memset(&kinova_velocity, 0, sizeof(kinova_velocity));  // zero structure
+
+    kinova_velocity.Position.Type = CARTESIAN_VELOCITY;
+    kinova_velocity.Position.CartesianPosition = velocities;
+    kinova_velocity.Position.HandMode = VELOCITY_MODE;
+    kinova_velocity.Position.Fingers = fingers;
+
+    int result = kinova_api_.sendAdvanceTrajectory(kinova_velocity);
+    if (result != NO_ERROR_KINOVA)
+    {
+        throw KinovaCommException("Could not send advanced Cartesian velocity trajectory", result);
+    }
+
+}
 
 /**
  * @brief This function returns the max translation(X, Y and Z) velocity of the robot's end effector in ClientConfigurations
@@ -1343,68 +1380,68 @@ void KinovaComm::setFingerPositions(const FingerAngles &fingers, int timeout, bo
 
     int result = NO_ERROR_KINOVA;
     int control_type;
-    result=kinova_api_.getControlType(control_type); // are we currently in angular or Cartesian mode? Response	0 = Cartesian control type, 1 = Angular control type.
-
 
     //initialize the trajectory point. same initialization for an angular or Cartesian point
     TrajectoryPoint kinova_point;
     kinova_point.InitStruct();
+
     memset(&kinova_point, 0, sizeof(kinova_point));  // zero structure
 
+    result=kinova_api_.getControlType(control_type); // are we currently in angular or Cartesian mode? Response	0 = Cartesian control type, 1 = Angular control type.
     if (result != NO_ERROR_KINOVA)
     {
         throw KinovaCommException("Could not get the current control type", result);
     }
     else
     {
-	if (push)
-    	{
+	     if (push)
+    	 {
         	result = kinova_api_.eraseAllTrajectories();
         	if (result != NO_ERROR_KINOVA)
         	{
            		throw KinovaCommException("Could not erase trajectories", result);
         	}
+    	 }
+    	// Initialize Cartesian control of the fingers
+    	kinova_point.Position.HandMode = POSITION_MODE;
+    	kinova_point.Position.Fingers = fingers;
+    	kinova_point.Position.Delay = 0.0;
+    	kinova_point.LimitationsActive = 0;
+    	if(control_type==0) //Cartesian
+    	{
+    		kinova_point.Position.Type = CARTESIAN_POSITION;
+    		CartesianPosition pose;
+                    memset(&pose, 0, sizeof(pose));  // zero structure
+    		result = kinova_api_.getCartesianCommand(pose);
+        		if (result != NO_ERROR_KINOVA)
+        		{
+            		throw KinovaCommException("Could not get the Cartesian position", result);
+        		}
+    		kinova_point.Position.CartesianPosition=pose.Coordinates;
     	}
-	// Initialize Cartesian control of the fingers
-	kinova_point.Position.HandMode = POSITION_MODE;
-	kinova_point.Position.Fingers = fingers;
-	kinova_point.Position.Delay = 0.0;
-	kinova_point.LimitationsActive = 0;
-	if(control_type==0) //Cartesian
-	{
-		kinova_point.Position.Type = CARTESIAN_POSITION;
-		CartesianPosition pose;
-                memset(&pose, 0, sizeof(pose));  // zero structure   
-		result = kinova_api_.getCartesianCommand(pose);
-    		if (result != NO_ERROR_KINOVA)
-    		{
-        		throw KinovaCommException("Could not get the Cartesian position", result);
-    		}    
-		kinova_point.Position.CartesianPosition=pose.Coordinates;
-	}
-        else if(control_type==1) //angular
-	{	
-		kinova_point.Position.Type = ANGULAR_POSITION;	
-		AngularPosition joint_angles;
-    		memset(&joint_angles, 0, sizeof(joint_angles));  // zero structure    
-		result = kinova_api_.getAngularCommand(joint_angles);
+      else if(control_type==1) //angular
+    	{
+    		kinova_point.Position.Type = ANGULAR_POSITION;
+    		AngularPosition joint_angles;
+        memset(&joint_angles, 0, sizeof(joint_angles));  // zero structure
+    		result = kinova_api_.getAngularCommand(joint_angles);
     		if (result != NO_ERROR_KINOVA)
     		{
         		throw KinovaCommException("Could not get the angular position", result);
-    		}    
-		kinova_point.Position.Actuators = joint_angles.Actuators;
-	}
-	else
-	{ 
-		throw KinovaCommException("Wrong control type", result);
-	}  
+    		}
+    		kinova_point.Position.Actuators = joint_angles.Actuators;
+    	}
+    	else
+    	{
+    		throw KinovaCommException("Wrong control type", result);
+    	}
     }
-     
+
 
     // getAngularPosition will cause arm drop
     // result = kinova_api_.getAngularPosition(joint_angles);
-       
-    result = kinova_api_.sendBasicTrajectory(kinova_point);
+    // result = kinova_api_.sendBasicTrajectory(kinova_point);
+    result = kinova_api_.sendAdvanceTrajectory(kinova_point); // (argallab)
     if (result != NO_ERROR_KINOVA)
     {
         throw KinovaCommException("Could not send advanced finger trajectory", result);
@@ -1572,6 +1609,45 @@ void KinovaComm::SetTorqueControlState(int state)
     if (result != NO_ERROR_KINOVA)
     {
         throw KinovaCommException("Could not set the torque control state", result);
+    }
+}
+
+/**
+ * set fixed or rotating frame (argallab)
+ */
+void KinovaComm::setFrameType(int &frameType)
+{
+    boost::recursive_mutex::scoped_lock lock(api_mutex_);
+    int result = kinova_api_.setFrameType(frameType);
+    if (result!=NO_ERROR_KINOVA)
+    {
+        throw KinovaCommException("Could not set frame type", result);
+    }
+}
+
+/**
+ * get joystick value (argallab)
+ */
+void KinovaComm::getJoystickValue(JoystickCommand &joystickCommand)
+{
+    boost::recursive_mutex::scoped_lock lock(api_mutex_);
+    int result = kinova_api_.getJoystickValue(joystickCommand);
+    if (result!=NO_ERROR_KINOVA)
+    {
+        throw KinovaCommException("Could not set frame type", result);
+    }
+}
+
+/**
+ * send joystick command (argallab)
+ */
+void KinovaComm::sendJoystickCommand(JoystickCommand &joystickCommand)
+{
+    boost::recursive_mutex::scoped_lock lock(api_mutex_);
+    int result = kinova_api_.sendJoystickCommand(joystickCommand);
+    if (result!=NO_ERROR_KINOVA)
+    {
+        throw KinovaCommException("Could not set frame type", result);
     }
 }
 

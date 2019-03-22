@@ -18,6 +18,9 @@
 #include <tf/tf.h>
 #include <tf/transform_listener.h>
 #include <sensor_msgs/JointState.h>
+// #include <std_msgs/Float32MultiArray.h>
+
+#include <jaco_teleop/CartVelCmd.h>
 
 #include <kinova_msgs/Stop.h>
 #include <kinova_msgs/Start.h>
@@ -38,6 +41,7 @@
 #include <kinova_msgs/ZeroTorques.h>
 #include <kinova_msgs/RunCOMParametersEstimation.h>
 #include <kinova_msgs/CartesianForce.h>
+#include <kinova_msgs/SwitchControllerMsg.h>
 
 #include <time.h>
 #include <math.h>
@@ -70,6 +74,7 @@ class KinovaArm
     void cartesianVelocityCallback(const kinova_msgs::PoseVelocityConstPtr& cartesian_vel);
     void jointTorqueSubscriberCallback(const kinova_msgs::JointTorqueConstPtr& joint_torque);
     void forceSubscriberCallback(const kinova_msgs::CartesianForceConstPtr& force);
+    void cartesianVelocityAndFingerCallback(const jaco_teleop::CartVelCmdConstPtr& teleop_vel); // Custom callback for full teleop of arm and fingers
 
     // Service callbacks -----------------------------------------------------------
     bool stopServiceCallback(kinova_msgs::Stop::Request &req, kinova_msgs::Stop::Response &res);
@@ -102,6 +107,9 @@ class KinovaArm
     bool runCOMParameterEstimationService(kinova_msgs::RunCOMParametersEstimation::Request &req,
                                           kinova_msgs::RunCOMParametersEstimation::Response &res);
 
+    // Control Mode
+    bool setControlModeService(kinova_msgs::SwitchControllerMsg::Request &req,
+                                kinova_msgs::SwitchControllerMsg::Response &res);
  private:
     void positionTimer(const ros::TimerEvent&);
     void cartesianVelocityTimer(const ros::TimerEvent&);
@@ -111,7 +119,7 @@ class KinovaArm
     void publishJointAngles(void);
     void publishToolPosition(void);
     void publishToolWrench(void);
-    void publishFingerPosition(void);   
+    void publishFingerPosition(void);
 
     tf::TransformListener tf_listener_;
     ros::NodeHandle node_handle_;
@@ -122,6 +130,7 @@ class KinovaArm
     ros::Subscriber cartesian_velocity_subscriber_;
     ros::Subscriber joint_torque_subscriber_;
     ros::Subscriber cartesian_force_subscriber_;
+    ros::Subscriber cartesian_velocity_finger_subscriber_;
 
     ros::Publisher joint_angles_publisher_;
     ros::Publisher tool_position_publisher_;
@@ -150,6 +159,8 @@ class KinovaArm
 
     ros::ServiceServer set_end_effector_offset_service_;
 
+    ros::ServiceServer set_control_mode_service_;
+
     // Timers for control loops
     ros::Timer status_timer_;
 
@@ -171,11 +182,15 @@ class KinovaArm
     double finger_conv_ratio_;
     bool convert_joint_velocities_;
 
+    bool is_trajectory_control_;
+
     // State tracking or utility members
     AngularInfo joint_velocities_;
     float l_joint_torque_[COMMAND_SIZE];
     float l_force_cmd_[COMMAND_SIZE];
     CartesianInfo cartesian_velocities_;
+
+    FingerAngles finger_positions_;
 
     std::vector< std::string > joint_names_;
 

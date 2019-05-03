@@ -20,7 +20,7 @@ find_package(Boost REQUIRED system filesystem date_time thread)
 
 catkin_package(
   INCLUDE_DIRS include
-  CATKIN_DEPENDS 
+  CATKIN_DEPENDS
     moveit_core
     moveit_ros_planning_interface
     interactive_markers
@@ -54,6 +54,10 @@ install(TARGETS work_scene DESTINATION ${CATKIN_PACKAGE_BIN_DESTINATION})
 add_executable(pick_place src/pick_place.cpp include/pick_place.h)
 target_link_libraries(pick_place ${catkin_LIBRARIES} ${Boost_LIBRARIES} ${kinova_driver_LIBRARIES})
 install(TARGETS pick_place DESTINATION ${CATKIN_PACKAGE_BIN_DESTINATION})
+
+add_executable(pouring src/pouring.cpp include/pick_place.h)
+target_link_libraries(pouring ${catkin_LIBRARIES} ${Boost_LIBRARIES} ${kinova_driver_LIBRARIES})
+install(TARGETS pouring DESTINATION ${CATKIN_PACKAGE_BIN_DESTINATION})
 
 add_executable(test_accuracy src/test_accuracy.cpp include/test_accuracy.h)
 target_link_libraries(test_accuracy ${catkin_LIBRARIES} ${Boost_LIBRARIES} ${kinova_driver_LIBRARIES})

@@ -104,6 +104,7 @@ class KinovaComm
     void getJointVelocities(KinovaAngles &vels);
     void setJointVelocities(const AngularInfo& joint_vel);
     void getJointAccelerations(AngularAcceleration &joint_acc);
+    void setJointVelocitiesAndFingers(const AngularInfo& joint_vel, const FingerAngles &fingers);
     void getJointTorques(KinovaAngles &tqs);
     void getJointCurrent(AngularPosition &anguler_current);
     void printAngles(const KinovaAngles &angles);

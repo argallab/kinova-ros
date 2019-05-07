@@ -660,6 +660,39 @@ void KinovaComm::setJointVelocities(const AngularInfo &joint_vel)
     }
 }
 
+//ARGALLAB SPECIFIC
+/**
+ * @brief This function controls robot with joint velocity plus finger velocity control
+ * This function sends trajectory point(ANGULAR_VELOCITY) that will be added in the robotical arm's FIFO. Waits until the arm has stopped moving before releasing control of the API. sendAdvanceTrajectory() is called in api to complete the motion.
+ * @param joint_vel joint velocity in degree/second
+ */
+void KinovaComm::setJointVelocitiesAndFingers(const AngularInfo &joint_vel, const FingerAngles &fingers)
+{
+  boost::recursive_mutex::scoped_lock lock(api_mutex_);
+
+  if (isStopped())
+  {
+    ROS_INFO("The velocities could not be set because the arm is stopped");
+    return;
+  }
+  TrajectoryPoint kinova_velocity;
+  kinova_velocity.InitStruct();
+
+  memset(&kinova_velocity, 0, sizeof(kinova_velocity)); //zero structure
+
+  kinova_velocity.Position.Type = ANGULAR_VELOCITY;
+  kinova_velocity.Position.Actuators = joint_vel;
+  kinova_velocity.Position.HandMode = VELOCITY_MODE;
+  kinova_velocity.Position.Fingers = fingers;
+
+
+  int result = kinova_api_.sendAdvanceTrajectory(kinova_velocity);
+  if (result != NO_ERROR_KINOVA)
+  {
+    throw KinovaCommException("Could not send advanced joint velocity trajectory", result);
+  }
+}
+
 void KinovaComm::setJointTorques(float joint_torque[])
 {
     boost::recursive_mutex::scoped_lock lock(api_mutex_);
@@ -916,7 +949,7 @@ int KinovaComm::runCOMParameterEstimation(ROBOT_TYPE type)
     // {
     //     throw KinovaCommException("Could not set COM Parameters", result);
     // }
-    result = kinova_api_.setGravityType(OPTIMAL); 
+    result = kinova_api_.setGravityType(OPTIMAL);
 }
 
 
@@ -1116,7 +1149,7 @@ void KinovaComm::setCartesianVelocities(const CartesianInfo &velocities)
 }
 
 
-/**
+/** ARGALLLAB
  * @brief Linear and angular velocity control in Cartesian space plus finger velocity control
  * This function sends trajectory point(CARTESIAN_VELOCITY) that will be added in the robotical arm's FIFO. Waits until the arm has stopped moving before releasing control of the API. sendAdvanceTrajectory() is called in api to complete the motion.
  * Definition of angular velocity "Omega" is based on the skew-symmetric matrices "S = R*R^(-1)", where "R" is the rotation matrix. angular velocity vector "Omega = [S(3,2); S(1,3); S(2,1)]".

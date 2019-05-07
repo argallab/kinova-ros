@@ -75,6 +75,7 @@ class KinovaArm
     void jointTorqueSubscriberCallback(const kinova_msgs::JointTorqueConstPtr& joint_torque);
     void forceSubscriberCallback(const kinova_msgs::CartesianForceConstPtr& force);
     void cartesianVelocityAndFingerCallback(const jaco_teleop::CartVelCmdConstPtr& teleop_vel); // Custom callback for full teleop of arm and fingers
+    void jointVelocityAndFingerCallback(const jaco_teleop::CartVelCmdConstPtr& teleop_vel);
 
     // Service callbacks -----------------------------------------------------------
     bool stopServiceCallback(kinova_msgs::Stop::Request &req, kinova_msgs::Stop::Response &res);
@@ -131,6 +132,7 @@ class KinovaArm
     ros::Subscriber joint_torque_subscriber_;
     ros::Subscriber cartesian_force_subscriber_;
     ros::Subscriber cartesian_velocity_finger_subscriber_;
+    ros::Subscriber joint_velocity_finger_subscriber_;
 
     ros::Publisher joint_angles_publisher_;
     ros::Publisher tool_position_publisher_;

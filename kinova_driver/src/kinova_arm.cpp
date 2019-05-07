@@ -224,6 +224,7 @@ KinovaArm::KinovaArm(KinovaComm &arm, const ros::NodeHandle &nodeHandle, const s
                                   &KinovaArm::forceSubscriberCallback, this);
     cartesian_velocity_finger_subscriber_ = node_handle_.subscribe("in/cartesian_velocity_finger", 1,
                                             &KinovaArm::cartesianVelocityAndFingerCallback, this);
+    joint_velocity_finger_subscriber_ = node_handle_.subscribe("in/joint_velocity_finger", 1, &KinovaArm::jointVelocityAndFingerCallback, this);
 
     node_handle_.param<double>("status_interval_seconds", status_interval_seconds_, 0.1);
 
@@ -749,6 +750,30 @@ void KinovaArm::cartesianVelocityAndFingerCallback(const jaco_teleop::CartVelCmd
           kinova_comm_.setCartesianVelocitiesAndFingers(cartesian_velocities_, finger_positions_);
 
      }
+}
+
+void KinovaArm::jointVelocityAndFingerCallback(const jaco_teleop::CartVelCmdConstPtr& teleop_vel)
+{
+    if(!kinova_comm_.isStopped())
+    {
+      joint_velocities_.Actuator1 = teleop_vel->velocity.data[0]*(180.0/M_PI);
+      joint_velocities_.Actuator2 = teleop_vel->velocity.data[1]*(180.0/M_PI);
+      joint_velocities_.Actuator3 = teleop_vel->velocity.data[2]*(180.0/M_PI);
+      joint_velocities_.Actuator4 = teleop_vel->velocity.data[4]*(180.0/M_PI);
+      // joint_velocities_.Actuator5 = teleop_vel->velocity.data[3]*(180.0/M_PI)*0.0;
+      joint_velocities_.Actuator5 = 0.0;
+      joint_velocities_.Actuator6 = teleop_vel->velocity.data[3]*(180.0/M_PI);
+      joint_velocities_.Actuator7 = teleop_vel->velocity.data[5]*(180.0/M_PI);
+
+      finger_positions_.Finger1 = teleop_vel->velocity.data[6];
+      finger_positions_.Finger2 = teleop_vel->velocity.data[7];
+      finger_positions_.Finger3 = teleop_vel->velocity.data[8];
+
+      if(!is_trajectory_control_)
+        kinova_comm_.setJointVelocitiesAndFingers(joint_velocities_, finger_positions_);
+
+
+    }
 }
 
 }  // namespace kinova

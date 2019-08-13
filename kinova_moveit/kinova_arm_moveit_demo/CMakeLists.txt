@@ -43,6 +43,10 @@ link_directories(${catkin_LIBRARY_DIRS})
 
 include_directories(${kinova_driver_INCLUDE_DIRS})
 
+add_executable(trajectory_simulator src/trajectory_simulator.cpp)
+target_link_libraries(trajectory_simulator ${catkin_LIBRARIES} ${Boost_LIBRARIES} ${kinova_driver_LIBRARIES})
+install(TARGETS trajectory_simulator DESTINATION ${CATKIN_PACKAGE_BIN_DESTINATION})
+
 add_executable(motion_plan src/motion_plan.cpp)
 target_link_libraries(motion_plan ${catkin_LIBRARIES} ${Boost_LIBRARIES} ${kinova_driver_LIBRARIES})
 install(TARGETS motion_plan DESTINATION ${CATKIN_PACKAGE_BIN_DESTINATION})

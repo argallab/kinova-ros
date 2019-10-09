@@ -1,4 +1,4 @@
-#include <pick_place.h>
+#include <kinova_arm_moveit_demo/pick_place.h>
 #include <ros/console.h>
 
 #include <tf_conversions/tf_eigen.h>

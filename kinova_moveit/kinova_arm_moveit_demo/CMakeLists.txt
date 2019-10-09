@@ -51,11 +51,11 @@ add_executable(work_scene src/work_scene.cpp)
 target_link_libraries(work_scene ${catkin_LIBRARIES} ${Boost_LIBRARIES} ${kinova_driver_LIBRARIES})
 install(TARGETS work_scene DESTINATION ${CATKIN_PACKAGE_BIN_DESTINATION})
 
-add_executable(pick_place src/pick_place.cpp include/pick_place.h)
+add_executable(pick_place src/pick_place.cpp include/kinova_arm_moveit_demo/pick_place.h)
 target_link_libraries(pick_place ${catkin_LIBRARIES} ${Boost_LIBRARIES} ${kinova_driver_LIBRARIES})
 install(TARGETS pick_place DESTINATION ${CATKIN_PACKAGE_BIN_DESTINATION})
 
-add_executable(pouring src/pouring.cpp include/pick_place.h)
+add_executable(pouring src/pouring.cpp include/kinova_arm_moveit_demo/pick_place.h)
 target_link_libraries(pouring ${catkin_LIBRARIES} ${Boost_LIBRARIES} ${kinova_driver_LIBRARIES})
 install(TARGETS pouring DESTINATION ${CATKIN_PACKAGE_BIN_DESTINATION})
 

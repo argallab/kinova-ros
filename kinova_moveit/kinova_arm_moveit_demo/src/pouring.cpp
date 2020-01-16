@@ -722,7 +722,7 @@ bool PickPlace::my_pick()
 
     // ROS_INFO_STREAM("Press any key to send robot to home position ...");
     // std::cin >> pause_;
-     group_->clearPathConstraints();
+    group_->clearPathConstraints();
     group_->setNamedTarget("Home");
     evaluate_plan(*group_);
 

@@ -1197,6 +1197,7 @@ void KinovaComm::setCartesianVelocitiesWithFingers(const CartesianInfo &velociti
  * @param velocities unit are meter/second for linear velocity and fingers are in turns/second?.
  */
 
+/*
 void KinovaComm::setCartesianVelocitiesAndFingers(const CartesianInfo &velocities, const FingerAngles &fingers)
 {
     boost::recursive_mutex::scoped_lock lock(api_mutex_);
@@ -1224,6 +1225,7 @@ void KinovaComm::setCartesianVelocitiesAndFingers(const CartesianInfo &velocitie
     }
 
 }
+*/
 
 /**
  * @brief This function returns the max translation(X, Y and Z) velocity of the robot's end effector in ClientConfigurations

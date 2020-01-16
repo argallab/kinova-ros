@@ -777,7 +777,7 @@ void KinovaArm::cartesianVelocityAndFingerCallback(const jaco_teleop::CartVelCmd
         finger_positions_.Finger3 = teleop_vel->velocity.data[8];
 
         if (!is_trajectory_control_)
-          kinova_comm_.setCartesianVelocitiesAndFingers(cartesian_velocities_, finger_positions_);
+          kinova_comm_.setCartesianVelocitiesWithFingers(cartesian_velocities_, finger_positions_);
 
      }
 }

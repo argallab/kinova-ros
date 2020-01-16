@@ -1,5 +1,5 @@
 <?xml version="1.0"?>
-<!-- j2_6n refers to jaco v2 6DOF non-spherical -->
+<!-- j2_6s refers to jaco v2 6DOF spherical -->
 
 
 <root xmlns:xi="http://www.w3.org/2001/XInclude"
@@ -26,9 +26,9 @@
     <xacro:property name="link_1_mesh" value="shoulder" />
     <xacro:property name="link_2_mesh" value="arm" />
     <xacro:property name="link_3_mesh" value="forearm" />
-    <xacro:property name="link_4_mesh" value="wrist" />
-    <xacro:property name="link_5_mesh" value="wrist" />
-    <xacro:property name="link_6_mesh" value="hand_3finger" />
+    <xacro:property name="link_4_mesh" value="wrist_spherical_1" />
+    <xacro:property name="link_5_mesh" value="wrist_spherical_2" />
+    <xacro:property name="link_6_mesh" value="hand_2finger" />
 
     <!--Used for conditional arguments for setting inertial parameters
         base 0, shoulder 1, arm 2, forearm 3, wrist 4, arm_mico 5,
@@ -40,8 +40,8 @@
     <xacro:property name="link_1_mesh_no" value="1" />
     <xacro:property name="link_2_mesh_no" value="2" />
     <xacro:property name="link_3_mesh_no" value="3" />
-    <xacro:property name="link_4_mesh_no" value="4" />
-    <xacro:property name="link_5_mesh_no" value="4" />
+    <xacro:property name="link_4_mesh_no" value="8" />
+    <xacro:property name="link_5_mesh_no" value="9" />
     <xacro:property name="link_6_mesh_no" value="55" />
 
     <xacro:property name="joint_base" value="joint_base" />
@@ -64,7 +64,7 @@
     <xacro:property name="joint_2_type" value="revolute" />
     <xacro:property name="joint_2_axis_xyz" value="0 0 1" />
     <xacro:property name="joint_2_origin_xyz" value="0 0.0016 -0.11875" />
-    <xacro:property name="joint_2_origin_rpy" value="-${J_PI/2} 0 ${J_PI}" />
+    <xacro:property name="joint_2_origin_rpy" value="${-J_PI/2} 0 ${J_PI}"/>
     <xacro:property name="joint_2_lower_limit" value="${47/180*J_PI}" />
     <xacro:property name="joint_2_upper_limit" value="${313/180*J_PI}" />
     <xacro:property name="joint_2_velocity_limit" value="${36*J_PI/180}" />
@@ -84,27 +84,27 @@
     <xacro:property name="joint_4_type" value="continuous" />
     <xacro:property name="joint_4_axis_xyz" value="0 0 1" />
     <xacro:property name="joint_4_origin_xyz" value="0 0.2073 -0.0114" />
-    <xacro:property name="joint_4_origin_rpy" value="-${J_PI/2} 0 ${J_PI}" />
+    <xacro:property name="joint_4_origin_rpy" value="${-J_PI/2} 0 ${J_PI}" />
     <xacro:property name="joint_4_lower_limit" value="${-2*J_PI}" />
     <xacro:property name="joint_4_upper_limit" value="${2*J_PI}" />
     <xacro:property name="joint_4_velocity_limit" value="${48*J_PI/180}" />
     <xacro:property name="joint_4_torque_limit" value="20" />
 
     <xacro:property name="joint_5" value="joint_5" />
-    <xacro:property name="joint_5_type" value="continuous" />
+    <xacro:property name="joint_5_type" value="revolute" />
     <xacro:property name="joint_5_axis_xyz" value="0 0 1" />
-    <xacro:property name="joint_5_origin_xyz" value="0 -0.03703 -0.06414" />
-    <xacro:property name="joint_5_origin_rpy" value="${J_PI/3} 0 ${J_PI}" />
-    <xacro:property name="joint_5_lower_limit" value="${-2*J_PI}" />
-    <xacro:property name="joint_5_upper_limit" value="${2*J_PI}" />
+    <xacro:property name="joint_5_origin_xyz" value="0 0 -0.10375" />
+    <xacro:property name="joint_5_origin_rpy" value="${J_PI/2} 0 ${J_PI}" />
+    <xacro:property name="joint_5_lower_limit" value="${30/180*J_PI}" />
+    <xacro:property name="joint_5_upper_limit" value="${330/180*J_PI}" />
     <xacro:property name="joint_5_velocity_limit" value="${48*J_PI/180}" />
     <xacro:property name="joint_5_torque_limit" value="20" />
 
     <xacro:property name="joint_6" value="joint_6" />
     <xacro:property name="joint_6_type" value="continuous" />
     <xacro:property name="joint_6_axis_xyz" value="0 0 1" />
-    <xacro:property name="joint_6_origin_xyz" value="0 -0.03703 -0.06414" />
-    <xacro:property name="joint_6_origin_rpy" value="${J_PI/3} 0 ${J_PI}" />
+    <xacro:property name="joint_6_origin_xyz" value="0 0.10375 0" />
+    <xacro:property name="joint_6_origin_rpy" value="${-J_PI/2} 0 ${J_PI}" />
     <xacro:property name="joint_6_lower_limit" value="${-2*J_PI}" />
     <xacro:property name="joint_6_upper_limit" value="${2*J_PI}" />
     <xacro:property name="joint_6_velocity_limit" value="${48*J_PI/180}" />
@@ -118,7 +118,7 @@
 
 
 
-    <xacro:macro name="j2n6s300" params="base_parent prefix:=j2n6s300">
+    <xacro:macro name="j2s6s200" params="base_parent prefix:=j2s6s200">
 
         <xacro:gazebo_config robot_namespace="${prefix}"/>
 
@@ -147,7 +147,8 @@
         <xacro:kinova_virtual_link link_name="${prefix}_end_effector"/>
         <xacro:kinova_virtual_joint joint_name="${prefix}_joint_end_effector" type="${joint_end_effector_type}" parent="${prefix}_link_6" child="${prefix}_end_effector" joint_axis_xyz="${joint_end_effector_axis_xyz}" joint_origin_xyz="${joint_end_effector_origin_xyz}" joint_origin_rpy="${joint_end_effector_origin_rpy}" joint_lower_limit="0" joint_upper_limit="0"/>
 
-    <xacro:kinova_3fingers link_hand="${prefix}_link_6" prefix="${prefix}_"/>
+    <xacro:kinova_2fingers link_hand="${prefix}_link_6" prefix="${prefix}_"/>
+
     </xacro:macro>
 
 

@@ -30,9 +30,9 @@ class trajectory_simulator
     geometry_msgs::Pose target_pose_;
     geometry_msgs::Pose start_pose_;
  
-    moveit::planning_interface::MoveGroup group;
+    moveit::planning_interface::MoveGroupInterface group;
     moveit_msgs::DisplayTrajectory display_trajectory;
-    moveit::planning_interface::MoveGroup::Plan my_plan;
+    moveit::planning_interface::MoveGroupInterface::Plan my_plan;
 
     std::vector<double> group_joint_values_;
     std::vector<double> home_joint_values_;

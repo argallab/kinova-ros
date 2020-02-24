@@ -192,6 +192,11 @@ KinovaArm::KinovaArm(KinovaComm &arm, const ros::NodeHandle &nodeHandle, const s
              &KinovaArm::setTorqueControlParametersService,this);
 
     set_control_mode_service_ = node_handle_.advertiseService("in/set_control_mode", &KinovaArm::setControlModeService, this);
+
+    //== argallab
+    set_collision_avoid_service_ = node_handle_.advertiseService("in/set_collision_avoid", &KinovaArm::ActivateCollisionAvoidCallback, this);
+    set_auto_singularity_avoid_service_ = node_handle_.advertiseService("in/set_auto_singularity_avoid", &KinovaArm::ActivateAutoSingularityAvoidCallback, this);
+
     /* Set up Publishers */
     joint_angles_publisher_ = node_handle_.advertise<kinova_msgs::JointAngles>
             ("out/joint_angles", 2);
@@ -256,6 +261,18 @@ bool KinovaArm::homeArmServiceCallback(kinova_msgs::HomeArm::Request &req, kinov
 bool KinovaArm::ActivateNullSpaceModeCallback(kinova_msgs::SetNullSpaceModeState::Request &req, kinova_msgs::SetNullSpaceModeState::Response &res)
 {
     kinova_comm_.SetRedundantJointNullSpaceMotion(req.state);
+}
+
+//== argallab
+bool KinovaArm::ActivateCollisionAvoidCallback(kinova_msgs::SetCollisionModeState::Request &req, kinova_msgs::SetCollisionModeState::Response &res)
+{
+    kinova_comm_.SelfCollisionAvoidanceInCartesianMode(req.state);
+}
+
+//== argallab
+bool KinovaArm::ActivateAutoSingularityAvoidCallback(kinova_msgs::SetSingularityModeState::Request &req, kinova_msgs::SetSingularityModeState::Response &res)
+{
+    kinova_comm_.SingularityAvoidanceInCartesianMode(req.state);
 }
 
 bool KinovaArm::setTorqueControlModeService(kinova_msgs::SetTorqueControlMode::Request &req, kinova_msgs::SetTorqueControlMode::Response &res)

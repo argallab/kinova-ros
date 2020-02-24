@@ -43,6 +43,8 @@
 #include <kinova_msgs/RunCOMParametersEstimation.h>
 #include <kinova_msgs/CartesianForce.h>
 #include <kinova_msgs/SwitchControllerMsg.h>
+#include <kinova_msgs/SetSingularityModeState.h>
+#include <kinova_msgs/SetCollisionModeState.h>
 
 #include <time.h>
 #include <math.h>
@@ -85,6 +87,12 @@ class KinovaArm
     bool homeArmServiceCallback(kinova_msgs::HomeArm::Request &req, kinova_msgs::HomeArm::Response &res);
     bool ActivateNullSpaceModeCallback(kinova_msgs::SetNullSpaceModeState::Request &req,
                                        kinova_msgs::SetNullSpaceModeState::Response &res);
+    //== argallab
+    bool ActivateCollisionAvoidCallback(kinova_msgs::SetCollisionModeState::Request &req,
+                                       kinova_msgs::SetCollisionModeState::Response &res);
+    //== argallab
+    bool ActivateAutoSingularityAvoidCallback(kinova_msgs::SetSingularityModeState::Request &req,
+                                       kinova_msgs::SetSingularityModeState::Response &res);
     bool addCartesianPoseToTrajectory(kinova_msgs::AddPoseToCartesianTrajectory::Request &req,
                                 kinova_msgs::AddPoseToCartesianTrajectory::Response &res);
     bool clearTrajectoriesServiceCallback(kinova_msgs::ClearTrajectories::Request &req,
@@ -165,6 +173,10 @@ class KinovaArm
     ros::ServiceServer set_end_effector_offset_service_;
 
     ros::ServiceServer set_control_mode_service_;
+
+    //== argallab
+    ros::ServiceServer set_collision_avoid_service_;
+    ros::ServiceServer set_auto_singularity_avoid_service_;
 
     // Timers for control loops
     ros::Timer status_timer_;

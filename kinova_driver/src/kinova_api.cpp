@@ -190,7 +190,7 @@ int KinovaAPI::initializeKinovaAPIFunctions(KinovaAPIType connection_type)
 
     ActivateCollisionAutomaticAvoidance = (int (*)(int))initCommandLayerFunction("ActivateCollisionAutomaticAvoidance");
 
-    //ActivateSingularityAutomaticAvoidance = (int (*)(int))initCommandLayerFunction("ActivateSingularityAutomaticAvoidance");
+    ActivateSingularityAutomaticAvoidance = (int (*)(int))initCommandLayerFunction("ActivateSingularityAutomaticAvoidance");
 
     //ActivateAutoNullSpaceMotionCartesian = (int (*)(int))initCommandLayerFunction("ActivateAutoNullSpaceMotionCartesian");
 

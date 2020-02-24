@@ -39,6 +39,8 @@ add_service_files(
   AddPoseToCartesianTrajectory.srv
   RunCOMParametersEstimation.srv
   SwitchControllerMsg.srv
+  SetSingularityModeState.srv
+  SetCollisionModeState.srv
 )
 
 add_action_files(DIRECTORY action

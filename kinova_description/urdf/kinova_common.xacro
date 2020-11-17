@@ -2,18 +2,18 @@
 
 
 <root xmlns:xi="http://www.w3.org/2001/XInclude"
-	xmlns:gazebo="http://playerstage.sourceforge.net/gazebo/xmlschema/#gz"
+  xmlns:gazebo="http://playerstage.sourceforge.net/gazebo/xmlschema/#gz"
     xmlns:model="http://playerstage.sourceforge.net/gazebo/xmlschema/#model"
-	xmlns:sensor="http://playerstage.sourceforge.net/gazebo/xmlschema/#sensor"
-	xmlns:body="http://playerstage.sourceforge.net/gazebo/xmlschema/#body"
+  xmlns:sensor="http://playerstage.sourceforge.net/gazebo/xmlschema/#sensor"
+  xmlns:body="http://playerstage.sourceforge.net/gazebo/xmlschema/#body"
     xmlns:geom="http://playerstage.sourceforge.net/gazebo/xmlschema/#geom"
     xmlns:joint="http://playerstage.sourceforge.net/gazebo/xmlschema/#joint"
-	xmlns:controller="http://playerstage.sourceforge.net/gazebo/xmlschema/#controller"
-	xmlns:interface="http://playerstage.sourceforge.net/gazebo/xmlschema/#interface"
-	xmlns:rendering="http://playerstage.sourceforge.net/gazebo/xmlschema/#rendering"
+  xmlns:controller="http://playerstage.sourceforge.net/gazebo/xmlschema/#controller"
+  xmlns:interface="http://playerstage.sourceforge.net/gazebo/xmlschema/#interface"
+  xmlns:rendering="http://playerstage.sourceforge.net/gazebo/xmlschema/#rendering"
     xmlns:renderable="http://playerstage.sourceforge.net/gazebo/xmlschema/#renderable"
     xmlns:physics="http://playerstage.sourceforge.net/gazebo/xmlschema/#physics"
-	xmlns:xacro="http://www.ros.org/wiki/xacro">
+  xmlns:xacro="http://www.ros.org/wiki/xacro">
 
 <xacro:include filename="$(find kinova_description)/urdf/kinova_inertial.xacro" />
 
@@ -32,15 +32,15 @@
                 </material>
             </visual>
 
-	    <!-- Adding ring to the model -->
-	         <xacro:if value="${use_ring_mesh}">
-	           <visual>
+      <!-- Adding ring to the model -->
+           <xacro:if value="${use_ring_mesh}">
+             <visual>
                 <geometry>
                     <mesh
                         filename="package://kinova_description/meshes/${ring_mesh}.dae"/>
                 </geometry>
              </visual>
-	    </xacro:if>
+      </xacro:if>
 
             <collision>
                 <geometry>
@@ -48,7 +48,7 @@
                         filename="package://kinova_description/meshes/${link_mesh}.dae"/>
                 </geometry>
             </collision>
-						<xacro:kinova_inertial mesh_no="${mesh_no}"/>
+            <xacro:kinova_inertial mesh_no="${mesh_no}"/>
       </link>
 
     </xacro:macro>
@@ -66,10 +66,10 @@
      <transmission name="${joint_name}_trans">
         <type>transmission_interface/SimpleTransmission</type>
         <joint name="${joint_name}">
-          <hardwareInterface>hardware_interface/EffortJointInterface</hardwareInterface>
+          <hardwareInterface>hardware_interface/VelocityJointInterface</hardwareInterface>
         </joint>
         <actuator name="${joint_name}_actuator">
-          <hardwareInterface>hardware_interface/EffortJointInterface</hardwareInterface>
+          <hardwareInterface>hardware_interface/VelocityJointInterface</hardwareInterface>
         <mechanicalReduction>160</mechanicalReduction>
         </actuator>
      </transmission>
@@ -114,16 +114,16 @@
             <origin xyz="${finger_origin_xyz}" rpy="${finger_origin_rpy}"/>
             <limit lower="0" upper="1.51" effort="2" velocity="1"/>
         </joint>
-		    <transmission name="${prefix}joint_finger_${finger_number}_trans">
-					<type>transmission_interface/SimpleTransmission</type>
-					<joint name="${prefix}joint_finger_${finger_number}">
-					  <hardwareInterface>hardware_interface/EffortJointInterface</hardwareInterface>
-					</joint>
-					<actuator name="${prefix}joint_finger_${finger_number}_actuator">
-					<hardwareInterface>hardware_interface/EffortJointInterface</hardwareInterface>
-					<mechanicalReduction>1</mechanicalReduction>
-					</actuator>
-		    </transmission>
+        <transmission name="${prefix}joint_finger_${finger_number}_trans">
+          <type>transmission_interface/SimpleTransmission</type>
+          <joint name="${prefix}joint_finger_${finger_number}">
+            <hardwareInterface>hardware_interface/VelocityJointInterface</hardwareInterface>
+          </joint>
+          <actuator name="${prefix}joint_finger_${finger_number}_actuator">
+          <hardwareInterface>hardware_interface/VelocityJointInterface</hardwareInterface>
+          <mechanicalReduction>1</mechanicalReduction>
+          </actuator>
+        </transmission>
 
 
 
@@ -137,14 +137,14 @@
             <limit lower="0" upper="2" effort="2" velocity="1"/>
         </joint>
         <transmission name="${prefix}joint_finger_tip_${finger_number}_trans">
-					<type>transmission_interface/SimpleTransmission</type>
-					<joint name="${prefix}joint_finger_tip_${finger_number}">
-					  <hardwareInterface>hardware_interface/EffortJointInterface</hardwareInterface>
-					</joint>
-					<actuator name="${prefix}joint_finger_tip_${finger_number}_actuator">
-					<hardwareInterface>hardware_interface/EffortJointInterface</hardwareInterface>
-					<mechanicalReduction>1</mechanicalReduction>
-					</actuator>
+          <type>transmission_interface/SimpleTransmission</type>
+          <joint name="${prefix}joint_finger_tip_${finger_number}">
+            <hardwareInterface>hardware_interface/VelocityJointInterface</hardwareInterface>
+          </joint>
+          <actuator name="${prefix}joint_finger_tip_${finger_number}_actuator">
+          <hardwareInterface>hardware_interface/VelocityJointInterface</hardwareInterface>
+          <mechanicalReduction>1</mechanicalReduction>
+          </actuator>
         </transmission>
 
     </xacro:macro>

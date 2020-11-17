@@ -194,6 +194,104 @@ j2s7s300:
       i: 0
       p: 200
     type: effort_controllers/JointPositionController
+
+
   joint_state_controller:
     publish_rate: 50
     type: joint_state_controller/JointStateController
+
+
+###### Velocity Interface Controllers #####
+
+
+  finger_1_velocity_controller:  ### misleading: fix fingers later ###
+    joint: j2s7s300_joint_finger_1
+    pid:
+      d: 0
+      i: 0
+      p: 10
+    type: velocity_controllers/JointPositionController
+  finger_2_velocity_controller:
+    joint: j2s7s300_joint_finger_2
+    pid:
+      d: 0
+      i: 0
+      p: 10
+    type: velocity_controllers/JointPositionController
+  finger_3_velocity_controller:
+    joint: j2s7s300_joint_finger_3
+    pid:
+      d: 0
+      i: 0
+      p: 10
+    type: velocity_controllers/JointPositionController
+  finger_tip_1_velocity_controller:
+    joint: j2s7s300_joint_finger_tip_1
+    pid:
+      d: 0
+      i: 0
+      p: 0.5
+    type: velocity_controllers/JointPositionController
+  finger_tip_2_velocity_controller:
+    joint: j2s7s300_joint_finger_tip_2
+    pid:
+      d: 0
+      i: 0
+      p: 0.5
+    type: velocity_controllers/JointPositionController
+  finger_tip_3_velocity_controller:
+    joint: j2s7s300_joint_finger_tip_3
+    pid:
+      d: 0
+      i: 0
+      p: 0.5
+    type: velocity_controllers/JointPositionController
+  joint_1_velocity_controller:
+    joint: j2s7s300_joint_1
+    pid:
+      d: 1.0
+      i: 0.5
+      p: 1000
+    type: velocity_controllers/JointVelocityController
+  joint_2_velocity_controller:
+    joint: j2s7s300_joint_2
+    pid:
+      d: 1.0
+      i: 0.5
+      p: 1000
+    type: velocity_controllers/JointVelocityController
+  joint_3_velocity_controller:
+    joint: j2s7s300_joint_3
+    pid:
+      d: 1.0
+      i: 0.5
+      p: 1000
+    type: velocity_controllers/JointVelocityController
+  joint_4_velocity_controller:
+    joint: j2s7s300_joint_4
+    pid:
+      d: 1.0
+      i: 0.5
+      p: 1000
+    type: velocity_controllers/JointVelocityController
+  joint_5_velocity_controller:
+    joint: j2s7s300_joint_5
+    pid:
+      d: 1.0
+      i: 0.5
+      p: 1000
+    type: velocity_controllers/JointVelocityController
+  joint_6_velocity_controller:
+    joint: j2s7s300_joint_6
+    pid:
+      d: 1.0
+      i: 0.5
+      p: 1000
+    type: velocity_controllers/JointVelocityController
+  joint_7_velocity_controller:
+    joint: j2s7s300_joint_7
+    pid:
+      d: 1.0
+      i: 0.5
+      p: 1000
+    type: velocity_controllers/JointVelocityController

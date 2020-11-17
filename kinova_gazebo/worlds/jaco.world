@@ -20,5 +20,7 @@
       </camera>
     </gui>
 
+    <gravity>0 0 0</gravity>
+    
   </world>
 </sdf>

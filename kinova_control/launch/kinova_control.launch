@@ -21,7 +21,7 @@
                joint_state_controller"/> 
     </group>
     <group if="$(arg is7dof)">
-      <!-- load the joint by joint position controllers -->  
+      <!-- load the joint by joint velocity controllers -->  
       <node name="$(arg kinova_robotName)_joints_controller" pkg="controller_manager" type="spawner" respawn="false"
         output="screen" ns="$(arg kinova_robotName)" 
        args="joint_1_velocity_controller joint_2_velocity_controller  
@@ -38,11 +38,11 @@
     <!-- Effort Joint trajectory controller-->
     <node name="$(arg kinova_robotName)_trajectory_controller" pkg="controller_manager" type="spawner" 
       output="screen" ns="$(arg kinova_robotName)" 
-      args="effort_joint_trajectory_controller
-      effort_finger_trajectory_controller    
-      finger_tip_1_position_controller
-      finger_tip_2_position_controller 
-      finger_tip_3_position_controller
+      args="velocity_joint_trajectory_controller
+      velocity_finger_trajectory_controller    
+      finger_tip_1_velocity_controller
+      finger_tip_2_velocity_controller 
+      finger_tip_3_velocity_controller
       joint_state_controller"/>    
   </group>
 

@@ -1,4 +1,7 @@
 j2s7s300:
+
+###### Effort Interface Controllers ######
+
   effort_finger_trajectory_controller:
     constraints:
       goal_time: 1.0
@@ -201,7 +204,8 @@ j2s7s300:
     type: joint_state_controller/JointStateController
 
 
-###### Velocity Interface Controllers #####
+###### Velocity Interface Controllers ######
+
 
   velocity_finger_trajectory_controller:
     constraints:
@@ -399,3 +403,28 @@ j2s7s300:
       i: 0.5
       p: 1000
     type: velocity_controllers/JointVelocityController
+
+
+### Position Controllers ###
+
+  finger_tip_1_pos_controller:
+    joint: j2s7s300_joint_finger_tip_1
+    pid:
+      d: 0
+      i: 0
+      p: 0.5
+    type: velocity_controllers/JointPositionController
+  finger_tip_2_pos_controller:
+    joint: j2s7s300_joint_finger_tip_2
+    pid:
+      d: 0
+      i: 0
+      p: 0.5
+    type: velocity_controllers/JointPositionController
+  finger_tip_3_pos_controller:
+    joint: j2s7s300_joint_finger_tip_3
+    pid:
+      d: 0
+      i: 0
+      p: 0.5
+    type: velocity_controllers/JointPositionController

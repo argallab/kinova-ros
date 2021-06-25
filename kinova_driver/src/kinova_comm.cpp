@@ -923,7 +923,7 @@ These parameters can then be sent as input to the function SetOptimalZParam().
 */
 int KinovaComm::runCOMParameterEstimation(ROBOT_TYPE type)
 {
-    setAngularControl();
+    // setAngularControl();
     float COMparams[GRAVITY_PARAM_SIZE];
     memset(&COMparams[0],0,sizeof(COMparams));
     int result;
